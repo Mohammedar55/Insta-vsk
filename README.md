@@ -1,2 +1,34 @@
-# Insta-vsk
-Xvdd jaksor
+
+
+
+git init
+git remote add origin https://github.com/username/repo-name.git
+
+# 3.  APK
+mkdir apks
+cp myapp.apk apks/
+git add apks/myapp.apk
+git commit -m "Add APK release"
+git push -u origin main
+git lfs install
+git lfs track "*.apk"
+git add .gitattributes apks/myapp.apk
+# GitHub CLI
+gh release create v1.0 myapp.apk --title "الإصدار 1.0" --notes //
+# .github/workflows/build.yml
+name: Build APK
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { java-version: '17', distribution: 'temurin' }
+      - uses: android-actions/setup-android@v3
+      - run: ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          
